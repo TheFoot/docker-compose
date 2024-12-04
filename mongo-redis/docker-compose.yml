@@ -1,0 +1,20 @@
+name: Services
+
+services:
+
+  wsdMongo:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    volumes:
+      - /mnt/data/mongo:/data/db
+
+  wsdRedis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+

@@ -1,0 +1,13 @@
+name: Ollama
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
+    volumes:
+      - /mnt/data/ollama:/root/.ollama
