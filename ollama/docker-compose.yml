@@ -11,3 +11,8 @@ services:
       - OLLAMA_KEEP_ALIVE=-1
     volumes:
       - /mnt/data/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
