@@ -1,20 +1,18 @@
-name: Services
+name: ai-services
 
 services:
 
   mongo:
     image: mongo:latest
-    container_name: mongodb
     ports:
-      - "27017:27017"
+      - "27018:27017"
     restart: unless-stopped
     volumes:
-      - /mnt/data/mongo:/data/db
+      - ~/data/homeMongoAIData:/data/db
 
   redis:
     image: redis:latest
-    container_name: redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     restart: unless-stopped
 

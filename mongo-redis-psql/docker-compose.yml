@@ -1,0 +1,28 @@
+name: wsd-services
+
+services:
+
+  mongo:
+    image: mongo:4.4
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    volumes:
+      - ~/data/wsdMongo4Data:/data/db
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  postgres12:
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - ~/data/wsdPostgres12Data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
