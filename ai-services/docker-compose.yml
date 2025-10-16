@@ -10,6 +10,19 @@ services:
     volumes:
       - ~/data/homeMongoAIData:/data/db
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-litellm_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   redis:
     image: redis:latest
     ports:
@@ -30,5 +43,28 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
 
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    command: ["--config", "/app/config.yaml"]
+    environment:
+      DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD:-litellm_password}@postgres:5432/litellm
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-}
+      UI_USERNAME: ${UI_USERNAME:-admin}
+      UI_PASSWORD: ${UI_PASSWORD:-admin}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      LITELLM_ALLOW_NON_REGISTERED_MODELS: ${LITELLM_ALLOW_NON_REGISTERED_MODELS:-true}
+      OLLAMA_LOCAL_BASE_URL: ${OLLAMA_LOCAL_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_SMARTHOME_BASE_URL: ${OLLAMA_SMARTHOME_BASE_URL:-http://smarthome01.local:11434}
+      UPSTREAM_LITELLM_BASE_URL: ${UPSTREAM_LITELLM_BASE_URL:-}
+      UPSTREAM_LITELLM_API_KEY: ${UPSTREAM_LITELLM_API_KEY:-}
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+
 volumes:
   n8n_data:
+  postgres_data:

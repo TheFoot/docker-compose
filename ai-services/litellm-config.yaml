@@ -1,0 +1,34 @@
+general_settings:
+  master_key: ${LITELLM_MASTER_KEY}
+  allow_non_registered_models: true
+
+server_settings:
+  host: 0.0.0.0
+  port: 4000
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  num_retries: 3
+  timeout: 120
+
+llm_credentials:
+  openai:
+    api_base: https://api.openai.com/v1
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_base: https://api.anthropic.com
+    api_key: ${ANTHROPIC_API_KEY}
+  ollama:
+    provider: ollama
+    api_base: ${OLLAMA_LOCAL_BASE_URL}
+  ollama_smart_home:
+    provider: ollama
+    api_base: ${OLLAMA_SMARTHOME_BASE_URL}
+
+model_list:
+  - model_name: wsdlitellm/wsd-atlas
+    litellm_params:
+      model: openai/wsd-atlas
+      api_base: ${UPSTREAM_LITELLM_BASE_URL}
+      api_key: ${UPSTREAM_LITELLM_API_KEY}
