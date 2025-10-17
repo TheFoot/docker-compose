@@ -27,8 +27,33 @@ llm_credentials:
     api_base: ${OLLAMA_SMARTHOME_BASE_URL}
 
 model_list:
+  # Upstream LiteLLM instance
   - model_name: wsdlitellm/wsd-atlas
     litellm_params:
       model: openai/wsd-atlas
       api_base: ${UPSTREAM_LITELLM_BASE_URL}
       api_key: ${UPSTREAM_LITELLM_API_KEY}
+
+  # OpenAI - all models dynamically accessible
+  - model_name: "openai/*"
+    litellm_params:
+      model: "openai/*"
+      api_key: os.environ/OPENAI_API_KEY
+
+  # Anthropic - all models dynamically accessible
+  - model_name: "anthropic/*"
+    litellm_params:
+      model: "anthropic/*"
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Ollama local - all models
+  - model_name: "ollama/*"
+    litellm_params:
+      model: "ollama/*"
+      api_base: ${OLLAMA_LOCAL_BASE_URL}
+
+  # Ollama smart home - all models
+  - model_name: "ollama_smart_home/*"
+    litellm_params:
+      model: "ollama/*"
+      api_base: ${OLLAMA_SMARTHOME_BASE_URL}

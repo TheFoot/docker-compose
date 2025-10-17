@@ -53,17 +53,47 @@ general_settings:
   allow_non_registered_models: true
 ```
 
-**Model Configuration:**
+**Model Configuration with Wildcard Routing:**
+
+LiteLLM supports wildcard routing, allowing dynamic access to **all models** from a provider without explicitly defining each one:
+
 ```yaml
 model_list:
+  # Upstream LiteLLM instance
   - model_name: wsdlitellm/wsd-atlas
     litellm_params:
-      model: openai/wsd-atlas          # Treat upstream as OpenAI-compatible
+      model: openai/wsd-atlas
       api_base: ${UPSTREAM_LITELLM_BASE_URL}
       api_key: ${UPSTREAM_LITELLM_API_KEY}
+
+  # OpenAI - all models dynamically accessible
+  - model_name: "openai/*"
+    litellm_params:
+      model: "openai/*"
+      api_key: os.environ/OPENAI_API_KEY
+
+  # Anthropic - all models dynamically accessible
+  - model_name: "anthropic/*"
+    litellm_params:
+      model: "anthropic/*"
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Ollama - all models
+  - model_name: "ollama/*"
+    litellm_params:
+      model: "ollama/*"
+      api_base: ${OLLAMA_LOCAL_BASE_URL}
 ```
 
-**Important:** When proxying to another LiteLLM instance, use `model: openai/model-name` format, NOT `provider: litellm`.
+**Wildcard Benefits:**
+- Access ANY model from OpenAI (`gpt-4`, `gpt-4o`, `gpt-4o-mini`, etc.) without config changes
+- Access ANY model from Anthropic (`claude-3-5-sonnet-20241022`, `claude-3-5-haiku-20241022`, etc.)
+- No restart needed when providers release new models
+- Single configuration per provider instead of dozens of model definitions
+
+**Important Notes:**
+- When proxying to another LiteLLM instance, use `model: openai/model-name` format, NOT `provider: litellm`
+- Ollama wildcards work but don't auto-discover locally installed models (query Ollama API directly for model list)
 
 ### 3. `.env` File
 
@@ -164,28 +194,38 @@ curl --location 'http://localhost:4000/key/generate' \
 
 ### Making API Requests
 
-Use the generated virtual key to make requests:
+Use the generated virtual key to make requests with **any** model from configured providers:
 
 ```bash
+# OpenAI models
+curl --location 'http://localhost:4000/v1/chat/completions' \
+  --header 'Authorization: Bearer sk-vwkNYiDzht-GSWVFqXDh0Q' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+
+# Anthropic models
+curl --location 'http://localhost:4000/v1/chat/completions' \
+  --header 'Authorization: Bearer sk-vwkNYiDzht-GSWVFqXDh0Q' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "model": "claude-3-5-sonnet-20241022",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+
+# Upstream LiteLLM model
 curl --location 'http://localhost:4000/v1/chat/completions' \
   --header 'Authorization: Bearer sk-vwkNYiDzht-GSWVFqXDh0Q' \
   --header 'Content-Type: application/json' \
   --data '{
     "model": "wsdlitellm/wsd-atlas",
-    "messages": [
-      {
-        "role": "system",
-        "content": "You are a helpful assistant."
-      },
-      {
-        "role": "user",
-        "content": "Hello!"
-      }
-    ],
-    "temperature": 0.8,
-    "max_tokens": 500
+    "messages": [{"role": "user", "content": "Hello!"}]
   }'
 ```
+
+**No configuration changes needed** - wildcard routing automatically handles all models!
 
 ### Available Models
 
