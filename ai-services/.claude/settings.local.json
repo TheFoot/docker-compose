@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker restart:*)",
+      "Bash(curl:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker ps:*)",
+      "Bash(python3:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.litellm.ai)",
+      "WebFetch(domain:github.com)",
+      "Read(//Users/thefoot/WebstormProjects/docker-compose/**)",
+      "Bash(env)",
+      "Bash(cat:*)",
+      "Bash(echo \"Host env: $OPENAI_API_KEY\")",
+      "Bash(unset:*)",
+      "Bash(while read line)",
+      "Bash(do echo \"$line\")",
+      "Bash(tr -d:*)",
+      "Bash(echo:*)",
+      "Bash(docker context:*)",
+      "Read(//Users/thefoot/.docker/run/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

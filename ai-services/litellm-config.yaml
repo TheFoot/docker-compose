@@ -27,12 +27,35 @@ llm_credentials:
     api_base: ${OLLAMA_SMARTHOME_BASE_URL}
 
 model_list:
-  # Upstream LiteLLM instance
+
+  # E2E test models (using native ollama on host)
+  - model_name: test-text-model
+    litellm_params:
+      model: ollama/llama3.2:1b-instruct-q2_K
+      api_base: os.environ/OLLAMA_LOCAL_BASE_URL
+      temperature: 0.2
+      max_tokens: 64
+      seed: 42
+      stop: [ "</s>", "```", "<|eot_id|>" ]
+      num_retries: 2
+      request_timeout: 60
+  - model_name: test-vision-model
+    litellm_params:
+      model: ollama/moondream:1.8b-v2-q2_K
+      api_base: os.environ/OLLAMA_LOCAL_BASE_URL
+      temperature: 0.2
+      max_tokens: 64
+      seed: 42
+      stop: [ "</s>", "```", "<|eot_id|>" ]
+      num_retries: 2
+      request_timeout: 90
+
+  # Upstream WSD LiteLLM instance
   - model_name: wsdlitellm/wsd-atlas
     litellm_params:
       model: openai/wsd-atlas
-      api_base: ${UPSTREAM_LITELLM_BASE_URL}
-      api_key: ${UPSTREAM_LITELLM_API_KEY}
+      api_base: os.environ/UPSTREAM_LITELLM_BASE_URL
+      api_key: os.environ/UPSTREAM_LITELLM_API_KEY
 
   # OpenAI - all models dynamically accessible
   - model_name: "openai/*"
@@ -40,7 +63,25 @@ model_list:
       model: "openai/*"
       api_key: os.environ/OPENAI_API_KEY
 
-  # Anthropic - all models dynamically accessible
+  # Anthropic - model aliases for "-latest" convenience names
+  - model_name: "anthropic/claude-3-5-sonnet-latest"
+    litellm_params:
+      model: "anthropic/claude-3-7-sonnet-20250219"
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: "anthropic/claude-sonnet-latest"
+    litellm_params:
+      model: "anthropic/claude-sonnet-4-5-20250929"
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: "anthropic/claude-haiku-latest"
+    litellm_params:
+      model: "anthropic/claude-3-5-haiku-20241022"
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: "anthropic/claude-opus-latest"
+    litellm_params:
+      model: "anthropic/claude-3-opus-20240229"
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Anthropic - all models dynamically accessible (for exact model IDs)
   - model_name: "anthropic/*"
     litellm_params:
       model: "anthropic/*"
@@ -50,10 +91,10 @@ model_list:
   - model_name: "ollama/*"
     litellm_params:
       model: "ollama/*"
-      api_base: ${OLLAMA_LOCAL_BASE_URL}
+      api_base: os.environ/OLLAMA_LOCAL_BASE_URL
 
   # Ollama smart home - all models
   - model_name: "ollama_smart_home/*"
     litellm_params:
       model: "ollama/*"
-      api_base: ${OLLAMA_SMARTHOME_BASE_URL}
+      api_base: os.environ/OLLAMA_SMARTHOME_BASE_URL

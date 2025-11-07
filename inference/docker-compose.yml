@@ -1,0 +1,27 @@
+name: "gpu-inference"
+
+services:
+
+  vllm-qwen3-32b:
+    image: vllm/vllm-openai:latest
+    container_name: vllm-qwen3-32b
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      HF_TOKEN: "${HF_TOKEN}"
+      HUGGING_FACE_HUB_TOKEN: "${HF_TOKEN}"
+    command: >
+      --model Qwen/Qwen3-32B
+      --download-dir /root/.cache/huggingface
+      --max-model-len 16384
+      --gpu-memory-utilization 0.55
+    volumes:
+      - /opt/hf:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

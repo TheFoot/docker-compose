@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/docker-compose.iml" filepath="$PROJECT_DIR$/.idea/docker-compose.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../markdoc/.idea/markdoc.iml" filepath="$PROJECT_DIR$/../markdoc/.idea/markdoc.iml" />
     </modules>
   </component>
 </project>

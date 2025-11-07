@@ -21,7 +21,7 @@ services:
       POSTGRES_USER: litellm
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ~/data/homePostgres16AIData:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
@@ -41,7 +41,7 @@ services:
       QUEUE_BULL_REDIS_HOST: redis
       QUEUE_BULL_REDIS_PORT: 6379
     volumes:
-      - n8n_data:/home/node/.n8n
+      - ~/data/homeN8NAIData:/home/node/.n8n
 
   litellm:
     image: ghcr.io/berriai/litellm:main-latest
@@ -50,21 +50,10 @@ services:
     ports:
       - "4000:4000"
     command: ["--config", "/app/config.yaml"]
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@postgres:5432/litellm
-      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
-      UI_USERNAME: ${UI_USERNAME}
-      UI_PASSWORD: ${UI_PASSWORD}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      LITELLM_ALLOW_NON_REGISTERED_MODELS: ${LITELLM_ALLOW_NON_REGISTERED_MODELS}
-      OLLAMA_LOCAL_BASE_URL: ${OLLAMA_LOCAL_BASE_URL}
-      OLLAMA_SMARTHOME_BASE_URL: ${OLLAMA_SMARTHOME_BASE_URL}
-      UPSTREAM_LITELLM_BASE_URL: ${UPSTREAM_LITELLM_BASE_URL}
-      UPSTREAM_LITELLM_API_KEY: ${UPSTREAM_LITELLM_API_KEY}
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
 
-volumes:
-  n8n_data:
-  postgres_data:

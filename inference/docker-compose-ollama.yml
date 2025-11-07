@@ -1,0 +1,22 @@
+name: "gpu-inference-ollama"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      # keep models hot for 30 minutes after last use
+      OLLAMA_KEEP_ALIVE: "30m"   # supported server env var
+      OLLAMA_HOST: "0.0.0.0:11434"
+    volumes:
+      - /opt/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
