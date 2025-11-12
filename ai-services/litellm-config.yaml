@@ -25,6 +25,9 @@ llm_credentials:
   ollama_smart_home:
     provider: ollama
     api_base: ${OLLAMA_SMARTHOME_BASE_URL}
+  spark:
+    provider: openai
+    api_base: ${SPARK_BASE_URL}
 
 model_list:
 
@@ -98,3 +101,10 @@ model_list:
     litellm_params:
       model: "ollama/*"
       api_base: os.environ/OLLAMA_SMARTHOME_BASE_URL
+
+  # Spark - NVidia spark device
+  - model_name: spark/qwen3-30b-a3b-fp8
+    litellm_params:
+      model: openai/qwen3-30b-a3b-fp8
+      api_base: os.environ/SPARK_BASE_URL
+
