@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../markdoc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../nvidia-spark" vcs="Git" />
   </component>
 </project>

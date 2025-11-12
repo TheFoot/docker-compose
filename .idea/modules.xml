@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/docker-compose.iml" filepath="$PROJECT_DIR$/.idea/docker-compose.iml" />
       <module fileurl="file://$PROJECT_DIR$/../markdoc/.idea/markdoc.iml" filepath="$PROJECT_DIR$/../markdoc/.idea/markdoc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../nvidia-spark/.idea/nvidia-spark.iml" filepath="$PROJECT_DIR$/../nvidia-spark/.idea/nvidia-spark.iml" />
     </modules>
   </component>
 </project>

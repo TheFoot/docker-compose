@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="markdoc" />
+    <orderEntry type="module" module-name="nvidia-spark" />
   </component>
 </module>
