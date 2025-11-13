@@ -55,6 +55,8 @@ services:
     environment:
       DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@postgres:5432/litellm
       SPARK_BASE_URL: ${SPARK_BASE_URL}
+      LITELLM_ENABLE_AUTO_TOOL_CHOICE: "true"
+      LITELLM_TOOL_CALL_PARSER: "true"
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
 

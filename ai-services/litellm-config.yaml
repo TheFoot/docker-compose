@@ -11,6 +11,8 @@ litellm_settings:
   set_verbose: false
   num_retries: 3
   timeout: 120
+  enable_auto_tool_choice: true
+  tool_call_parser: true
 
 llm_credentials:
   openai:
@@ -107,4 +109,7 @@ model_list:
     litellm_params:
       model: openai/qwen3-30b-a3b-fp8
       api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
 
