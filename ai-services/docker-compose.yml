@@ -43,6 +43,22 @@ services:
     volumes:
       - ~/data/homeN8NAIData:/home/node/.n8n
 
+  n8n-mcp:
+    image: ghcr.io/czlonkowski/n8n-mcp:latest
+    container_name: n8n-mcp
+    restart: unless-stopped
+    entrypoint: ["sleep", "infinity"]
+    environment:
+      MCP_MODE: stdio
+      LOG_LEVEL: error
+      DISABLE_CONSOLE_OUTPUT: "true"
+      N8N_API_URL: http://n8n:5678
+      N8N_API_KEY: ${N8N_API_KEY}
+      WEBHOOK_SECURITY_MODE: moderate
+      N8N_MCP_TELEMETRY_DISABLED: "true"
+    depends_on:
+      - n8n
+
   litellm:
     image: ghcr.io/berriai/litellm:main-latest
     container_name: litellm

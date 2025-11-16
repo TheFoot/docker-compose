@@ -21,7 +21,18 @@
       "Bash(tr -d:*)",
       "Bash(echo:*)",
       "Bash(docker context:*)",
-      "Read(//Users/thefoot/.docker/run/**)"
+      "Read(//Users/thefoot/.docker/run/**)",
+      "Bash(docker inspect:*)",
+      "Bash(test-response.json)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(docker image inspect:*)",
+      "Bash(claude mcp add n8n docker exec -i n8n-mcp /usr/local/bin/docker-entrypoint.sh)",
+      "Bash(claude mcp add --help:*)",
+      "Bash(claude mcp add --transport stdio --scope user n8n -- docker exec -i n8n-mcp /usr/local/bin/docker-entrypoint.sh)",
+      "Bash(claude mcp:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
