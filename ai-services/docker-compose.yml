@@ -54,7 +54,7 @@ services:
       DISABLE_CONSOLE_OUTPUT: "true"
       N8N_API_URL: http://n8n:5678
       N8N_API_KEY: ${N8N_API_KEY}
-      WEBHOOK_SECURITY_MODE: moderate
+      WEBHOOK_SECURITY_MODE: permissive
       N8N_MCP_TELEMETRY_DISABLED: "true"
     depends_on:
       - n8n

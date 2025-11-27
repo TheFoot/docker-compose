@@ -113,3 +113,9 @@ model_list:
       tool_call_parser: true
       supports_function_calling: true
 
+  # Spark - NVidia spark device
+  - model_name: spark/llama31-8b-fp8
+    litellm_params:
+      model: openai/llama31-8b-fp8
+      api_base: os.environ/SPARK_BASE_URL
+
