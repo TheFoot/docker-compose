@@ -1,5 +1,5 @@
 general_settings:
-  master_key: ${LITELLM_MASTER_KEY}
+  master_key: os.environ/LITELLM_MASTER_KEY
   allow_non_registered_models: true
 
 server_settings:
@@ -17,50 +17,15 @@ litellm_settings:
 llm_credentials:
   openai:
     api_base: https://api.openai.com/v1
-    api_key: ${OPENAI_API_KEY}
+    api_key: os.environ/OPENAI_API_KEY
   anthropic:
     api_base: https://api.anthropic.com
-    api_key: ${ANTHROPIC_API_KEY}
-  ollama:
-    provider: ollama
-    api_base: ${OLLAMA_LOCAL_BASE_URL}
-  ollama_smart_home:
-    provider: ollama
-    api_base: ${OLLAMA_SMARTHOME_BASE_URL}
+    api_key: os.environ/ANTHROPIC_API_KEY
   spark:
     provider: openai
-    api_base: ${SPARK_BASE_URL}
+    api_base: os.environ/SPARK_BASE_URL
 
 model_list:
-
-  # E2E test models (using native ollama on host)
-  - model_name: test-text-model
-    litellm_params:
-      model: ollama/llama3.2:1b-instruct-q2_K
-      api_base: os.environ/OLLAMA_LOCAL_BASE_URL
-      temperature: 0.2
-      max_tokens: 64
-      seed: 42
-      stop: [ "</s>", "```", "<|eot_id|>" ]
-      num_retries: 2
-      request_timeout: 60
-  - model_name: test-vision-model
-    litellm_params:
-      model: ollama/moondream:1.8b-v2-q2_K
-      api_base: os.environ/OLLAMA_LOCAL_BASE_URL
-      temperature: 0.2
-      max_tokens: 64
-      seed: 42
-      stop: [ "</s>", "```", "<|eot_id|>" ]
-      num_retries: 2
-      request_timeout: 90
-
-  # Upstream WSD LiteLLM instance
-  - model_name: wsdlitellm/wsd-atlas
-    litellm_params:
-      model: openai/wsd-atlas
-      api_base: os.environ/UPSTREAM_LITELLM_BASE_URL
-      api_key: os.environ/UPSTREAM_LITELLM_API_KEY
 
   # OpenAI - all models dynamically accessible
   - model_name: "openai/*"
@@ -68,22 +33,18 @@ model_list:
       model: "openai/*"
       api_key: os.environ/OPENAI_API_KEY
 
-  # Anthropic - model aliases for "-latest" convenience names
-  - model_name: "anthropic/claude-3-5-sonnet-latest"
-    litellm_params:
-      model: "anthropic/claude-3-7-sonnet-20250219"
-      api_key: os.environ/ANTHROPIC_API_KEY
+  # Anthropic - model aliases for "-latest" convenience names (Claude 4.6)
   - model_name: "anthropic/claude-sonnet-latest"
     litellm_params:
-      model: "anthropic/claude-sonnet-4-5-20250929"
-      api_key: os.environ/ANTHROPIC_API_KEY
-  - model_name: "anthropic/claude-haiku-latest"
-    litellm_params:
-      model: "anthropic/claude-3-5-haiku-20241022"
+      model: "anthropic/claude-sonnet-4-6"
       api_key: os.environ/ANTHROPIC_API_KEY
   - model_name: "anthropic/claude-opus-latest"
     litellm_params:
-      model: "anthropic/claude-3-opus-20240229"
+      model: "anthropic/claude-opus-4-6"
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: "anthropic/claude-haiku-latest"
+    litellm_params:
+      model: "anthropic/claude-haiku-4-5-20251001"
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # Anthropic - all models dynamically accessible (for exact model IDs)
@@ -91,18 +52,6 @@ model_list:
     litellm_params:
       model: "anthropic/*"
       api_key: os.environ/ANTHROPIC_API_KEY
-
-  # Ollama local - all models
-  - model_name: "ollama/*"
-    litellm_params:
-      model: "ollama/*"
-      api_base: os.environ/OLLAMA_LOCAL_BASE_URL
-
-  # Ollama smart home - all models
-  - model_name: "ollama_smart_home/*"
-    litellm_params:
-      model: "ollama/*"
-      api_base: os.environ/OLLAMA_SMARTHOME_BASE_URL
 
   # Spark - NVidia spark device
   - model_name: spark/qwen3-30b-a3b-fp8
@@ -118,4 +67,3 @@ model_list:
     litellm_params:
       model: openai/llama31-8b-fp8
       api_base: os.environ/SPARK_BASE_URL
-
