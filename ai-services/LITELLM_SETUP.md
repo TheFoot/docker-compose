@@ -34,7 +34,7 @@ Upstream Services:
 - `postgres`: PostgreSQL 16 database for LiteLLM key management
   - Port: `5433:5432` (external:internal)
   - Database: `litellm`
-  - Credentials: `litellm` / `${POSTGRES_PASSWORD:-litellm_password}`
+  - Credentials: `litellm` / `${POSTGRES_PASSWORD}`
 
 - `litellm`: LiteLLM proxy service
   - Port: `4000:4000`
@@ -100,10 +100,10 @@ model_list:
 Required environment variables:
 ```bash
 # LiteLLM Master Key (must start with 'sk-')
-LITELLM_MASTER_KEY=sk-65wXqHtszsYAcNKs7xJd
+LITELLM_MASTER_KEY=sk-<REDACTED-see-SOPS-vault>
 
 # PostgreSQL Password
-POSTGRES_PASSWORD=litellm_password
+POSTGRES_PASSWORD=<set-to-strong-value-see-SOPS-vault>
 
 # API Keys for upstream providers
 OPENAI_API_KEY=your-openai-key
@@ -119,10 +119,10 @@ OLLAMA_SMARTHOME_BASE_URL=http://smarthome01.local:11434
 
 # UI Credentials
 UI_USERNAME=thefoot
-UI_PASSWORD=th3f00tn355123
+UI_PASSWORD=<REDACTED-see-SOPS-vault>
 
 # PostgreSQL Password
-POSTGRES_PASSWORD=litellm_password
+POSTGRES_PASSWORD=<set-to-strong-value-see-SOPS-vault>
 ```
 
 ## Initial Setup
@@ -139,7 +139,7 @@ When starting LiteLLM with a database for the first time, you need to bootstrap 
 
 ```bash
 # 1. Insert master key hash into database
-MASTER_KEY_HASH=$(echo -n "sk-65wXqHtszsYAcNKs7xJd" | shasum -a 256 | cut -d' ' -f1)
+MASTER_KEY_HASH=$(echo -n "sk-<REDACTED-see-SOPS-vault>" | shasum -a 256 | cut -d' ' -f1)
 
 docker exec postgres psql -U litellm -d litellm -c "
 INSERT INTO \"LiteLLM_VerificationToken\" (token, key_alias, models, permissions)
@@ -169,7 +169,7 @@ Use the master key to generate virtual API keys:
 
 ```bash
 curl --location 'http://localhost:4000/key/generate' \
-  --header 'Authorization: Bearer sk-65wXqHtszsYAcNKs7xJd' \
+  --header 'Authorization: Bearer sk-<REDACTED-see-SOPS-vault>' \
   --header 'Content-Type: application/json' \
   --data '{
     "models": ["all-proxy-models"],
@@ -249,7 +249,7 @@ LiteLLM includes a web-based admin UI for managing keys, users, teams, and monit
 
 **Credentials:**
 - Username: `thefoot`
-- Password: `th3f00tn355123`
+- Password: `<REDACTED-see-SOPS-vault>`
 
 **UI Features:**
 - View and manage API keys
@@ -265,7 +265,7 @@ LiteLLM includes a web-based admin UI for managing keys, users, teams, and monit
 
 ```bash
 curl --location 'http://localhost:4000/key/list' \
-  --header 'Authorization: Bearer sk-65wXqHtszsYAcNKs7xJd'
+  --header 'Authorization: Bearer sk-<REDACTED-see-SOPS-vault>'
 ```
 
 ### Update Key Permissions
@@ -284,7 +284,7 @@ WHERE key_alias = 'api-key';
 
 ```bash
 curl --location 'http://localhost:4000/key/delete' \
-  --header 'Authorization: Bearer sk-65wXqHtszsYAcNKs7xJd' \
+  --header 'Authorization: Bearer sk-<REDACTED-see-SOPS-vault>' \
   --header 'Content-Type: application/json' \
   --data '{
     "key": "sk-vwkNYiDzht-GSWVFqXDh0Q"
@@ -294,7 +294,7 @@ curl --location 'http://localhost:4000/key/delete' \
 ## Current Keys
 
 ### Master Key (Admin)
-- **Key:** `sk-65wXqHtszsYAcNKs7xJd`
+- **Key:** `sk-<REDACTED-see-SOPS-vault>`
 - **User:** `admin-user` (proxy_admin role)
 - **Permissions:** All admin operations
 - **Use:** Generating/managing virtual keys
