@@ -1,0 +1,84 @@
+name: ai-services
+
+services:
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    command: ["--auth", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+      - "10.137.1.49:27017:27017"
+    restart: unless-stopped
+    volumes:
+      - /mnt/data/ai-services/mongo:/data/db
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "0.0.0.0:5432:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - /mnt/data/ai-services/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
+
+  litellm:
+    # Pinned: main-latest removed after supply chain attack on PyPI v1.82.7/v1.82.8 (March 2026)
+    image: ghcr.io/berriai/litellm:main-v1.82.3-stable.patch.2
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:4000:4000"
+    command: ["--config", "/app/config.yaml"]
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@postgres:5432/litellm
+      SPARK_BASE_URL: ${SPARK_BASE_URL}
+      LITELLM_ENABLE_AUTO_TOOL_CHOICE: "true"
+      LITELLM_TOOL_CALL_PARSER: "true"
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    depends_on:
+      - postgres
+      - redis
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "0.0.0.0:5678:5678"
+    restart: unless-stopped
+    environment:
+      DB_TYPE: sqlite
+      EXECUTIONS_MODE: regular
+      QUEUE_BULL_REDIS_HOST: redis
+      QUEUE_BULL_REDIS_PORT: 6379
+      N8N_HOST: smarthome01.thefootonline.local
+      WEBHOOK_URL: http://smarthome01.thefootonline.local:5678/
+      N8N_API_KEY: ${N8N_API_KEY}
+      N8N_PUBLIC_API_ENABLED: "true"
+      N8N_SECURE_COOKIE: "false"
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      N8N_RESTRICT_ENVIRONMENT_VARIABLES_ACCESS: "false"
+    volumes:
+      - /mnt/data/ai-services/n8n:/home/node/.n8n
+    depends_on:
+      - redis
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-ai-services

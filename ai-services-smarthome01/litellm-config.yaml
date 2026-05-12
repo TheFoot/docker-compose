@@ -1,0 +1,76 @@
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  allow_non_registered_models: true
+
+server_settings:
+  host: 0.0.0.0
+  port: 4000
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  num_retries: 3
+  timeout: 120
+  enable_auto_tool_choice: true
+  tool_call_parser: true
+
+llm_credentials:
+  openai:
+    api_base: https://api.openai.com/v1
+    api_key: os.environ/OPENAI_API_KEY
+  anthropic:
+    api_base: https://api.anthropic.com
+    api_key: os.environ/ANTHROPIC_API_KEY
+  spark:
+    provider: openai
+    api_base: os.environ/SPARK_BASE_URL
+
+model_list:
+
+  # OpenAI - all models dynamically accessible
+  - model_name: "openai/*"
+    litellm_params:
+      model: "openai/*"
+      api_key: os.environ/OPENAI_API_KEY
+
+  # Anthropic - model aliases for "-latest" convenience names (Claude 4.6)
+  - model_name: "anthropic/claude-sonnet-latest"
+    litellm_params:
+      model: "anthropic/claude-sonnet-4-6"
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: "anthropic/claude-opus-latest"
+    litellm_params:
+      model: "anthropic/claude-opus-4-6"
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: "anthropic/claude-haiku-latest"
+    litellm_params:
+      model: "anthropic/claude-haiku-4-5-20251001"
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Anthropic - all models dynamically accessible (for exact model IDs)
+  - model_name: "anthropic/*"
+    litellm_params:
+      model: "anthropic/*"
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Spark - NVIDIA DGX Spark inference (currently Qwen3.5-35B-A3B-FP8)
+  - model_name: spark/qwen35-35b-a3b-fp8
+    litellm_params:
+      model: openai/qwen35-35b-a3b-fp8
+      api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
+
+  - model_name: spark/qwen3-30b-a3b-fp8
+    litellm_params:
+      model: openai/qwen3-30b-a3b-fp8
+      api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
+
+  - model_name: spark/llama31-8b-fp8
+    litellm_params:
+      model: openai/llama31-8b-fp8
+      api_base: os.environ/SPARK_BASE_URL

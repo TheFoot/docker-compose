@@ -960,3 +960,19 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose stack hygiene
+# ─────────────────────────────────────────────────────────────────────────────
+# Belt + braces: never commit per-stack secrets.
+**/.env
+**/.env.*
+!**/.env.example
+
+# Pre-phase backup snapshots that pile up next to live compose files.
+*.bak-pre-*
+
+# Runtime data dirs that some stacks bind-mount into the repo tree
+# (defence in depth — bind mounts should live outside the repo, but if anyone
+# ever puts them here by accident, we don't ship them).
+**/data/
+**/volumes/
