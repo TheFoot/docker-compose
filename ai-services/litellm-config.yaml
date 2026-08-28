@@ -53,7 +53,48 @@ model_list:
       model: "anthropic/*"
       api_key: os.environ/ANTHROPIC_API_KEY
 
-  # Spark - NVidia spark device
+  # Spark - NVIDIA DGX Spark inference (default: Qwen3.8-27B-NVFP4 dense, 2026-08-17)
+  - model_name: spark/qwen38-27b-nvfp4
+    litellm_params:
+      model: openai/qwen38-27b-nvfp4
+      api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
+
+
+  # Spark - Qwen3.8-Flash-Next-NVFP4 (RadixArk/Qwen3.8-Flash-Next-NVFP4 snapshot 7b71922524)
+  - model_name: spark/qwen38-flash-next-nvfp4
+    litellm_params:
+      model: openai/qwen38-flash-next
+      api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
+
+  # Stable alias for the estate's current default local model. Callers should
+  # target `local/default` and NOT the underlying engine tag. To rotate the
+  # local model, repoint ONLY this entry's litellm_params.model to the new
+  # concrete engine tag (e.g. openai/<new-model>); no caller changes needed.
+  - model_name: local/default
+    litellm_params:
+      model: openai/qwen38-27b-nvfp4
+      api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
+
+  # DEPRECATED 2026-08-17: qwen35 container was bricked (Triton CUDA kernel-load
+  # crash on any real request; /health lied green). Service stopped; entry kept
+  # for reference until callers migrate. Will 404 while service is stopped.
+  - model_name: spark/qwen35-35b-a3b-fp8
+    litellm_params:
+      model: openai/qwen35-35b-a3b-fp8
+      api_base: os.environ/SPARK_BASE_URL
+      enable_auto_tool_choice: true
+      tool_call_parser: true
+      supports_function_calling: true
+
   - model_name: spark/qwen3-30b-a3b-fp8
     litellm_params:
       model: openai/qwen3-30b-a3b-fp8
@@ -62,7 +103,6 @@ model_list:
       tool_call_parser: true
       supports_function_calling: true
 
-  # Spark - NVidia spark device
   - model_name: spark/llama31-8b-fp8
     litellm_params:
       model: openai/llama31-8b-fp8

@@ -1,70 +1,54 @@
 name: ai-services
 
+# Deploy target: smarthome01 (Docker on Linux).
+# Volume paths are the live host paths; do not change them for dev-time
+# convenience — dev overlays belong in a compose.override.yml.
+# All secret values come from .env (gitignored); this file carries only
+# environment variable REFERENCES. See README.md for the sync convention
+# and the secret-reference policy.
+
 services:
 
   mongo:
     image: mongo:latest
+    container_name: mongo
+    command: ["--auth", "--bind_ip_all"]
     ports:
-      - "27018:27017"
+      - "127.0.0.1:27017:27017"
+      - "10.137.1.49:27017:27017"
     restart: unless-stopped
     volumes:
-      - /Users/thefoot/data/ai-services/mongo:/data/db
+      - /mnt/data/ai-services/mongo:/data/db
 
   postgres:
     image: postgres:16-alpine
     container_name: postgres
     ports:
-      - "5433:5432"
+      - "0.0.0.0:5432:5432"
     restart: unless-stopped
     environment:
       POSTGRES_DB: litellm
       POSTGRES_USER: litellm
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - /Users/thefoot/data/ai-services/postgres:/var/lib/postgresql/data
+      - /mnt/data/ai-services/postgres:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
+    container_name: redis
     ports:
-      - "6380:6379"
+      - "127.0.0.1:6379:6379"
     restart: unless-stopped
-
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    container_name: n8n
-    ports:
-      - "5678:5678"
-    restart: unless-stopped
-    environment:
-      DB_TYPE: sqlite
-      EXECUTIONS_MODE: regular
-      QUEUE_BULL_REDIS_HOST: redis
-      QUEUE_BULL_REDIS_PORT: 6379
-    volumes:
-      - /Users/thefoot/data/ai-services/n8n:/home/node/.n8n
-
-  n8n-mcp:
-    image: ghcr.io/czlonkowski/n8n-mcp:latest
-    container_name: n8n-mcp
-    restart: unless-stopped
-    entrypoint: ["sleep", "infinity"]
-    environment:
-      MCP_MODE: stdio
-      LOG_LEVEL: error
-      DISABLE_CONSOLE_OUTPUT: "true"
-      N8N_API_URL: http://n8n:5678
-      N8N_API_KEY: ${N8N_API_KEY}
-      WEBHOOK_SECURITY_MODE: permissive
-      N8N_MCP_TELEMETRY_DISABLED: "true"
-    depends_on:
-      - n8n
 
   litellm:
-    image: ghcr.io/berriai/litellm:main-latest
+    # Pinned: main-latest removed after supply chain attack on PyPI
+    # v1.82.7/v1.82.8 (March 2026). Never revert to main-latest without
+    # a fresh advisory review.
+    image: ghcr.io/berriai/litellm:main-v1.82.3-stable.patch.2
     container_name: litellm
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - "0.0.0.0:4000:4000"
     command: ["--config", "/app/config.yaml"]
     env_file:
       - .env
@@ -75,4 +59,44 @@ services:
       LITELLM_TOOL_CALL_PARSER: "true"
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
+    depends_on:
+      - postgres
+      - redis
 
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    ports:
+      - "0.0.0.0:5678:5678"
+    restart: unless-stopped
+    environment:
+      DB_TYPE: sqlite
+      EXECUTIONS_MODE: regular
+      QUEUE_BULL_REDIS_HOST: redis
+      QUEUE_BULL_REDIS_PORT: 6379
+      N8N_HOST: smarthome01.thefootonline.local
+      WEBHOOK_URL: http://smarthome01.thefootonline.local:5678/
+      N8N_API_KEY: ${N8N_API_KEY}
+      N8N_PUBLIC_API_ENABLED: "true"
+      N8N_SECURE_COOKIE: "false"
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      N8N_RESTRICT_ENVIRONMENT_VARIABLES_ACCESS: "false"
+    volumes:
+      - /mnt/data/ai-services/n8n:/home/node/.n8n
+    depends_on:
+      - redis
+
+  # n8n-mcp removed 2026-04-09. We call n8n directly via its REST API
+  # (proven viable in the cron-monitoring project — workflows updated
+  # via curl). The n8n-mcp Docker image's healthcheck assumed an HTTP
+  # server on port 3000, but our usage was stdio mode via `docker exec`,
+  # so the healthcheck failed continuously (53k+ failing streak when
+  # finally torn down). Removing the layer simplifies the estate; if
+  # we ever want self-documenting MCP tools we can add it back, but
+  # the direct-API path is what we actually use.
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-ai-services
